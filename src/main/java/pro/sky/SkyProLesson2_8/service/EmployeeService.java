@@ -1,15 +1,19 @@
 package pro.sky.SkyProLesson2_8.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import pro.sky.SkyProLesson2_8.exception.EmployeeAlreadyAddedException;
 import pro.sky.SkyProLesson2_8.exception.EmployeeNotFoundException;
 import pro.sky.SkyProLesson2_8.exception.EmployeeStorageIsFullException;
+import pro.sky.SkyProLesson2_8.exception.InvalidInputException;
 import pro.sky.SkyProLesson2_8.model.Employee;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.*;
 
 @Service
 public class EmployeeService {
@@ -26,6 +30,11 @@ public class EmployeeService {
                         String surname,
                         int department,
                         double salary) {
+        if (!validateInput(name, surname)) {
+            throw new InvalidInputException();
+        }
+
+
         Employee employee = new Employee(name, surname, department, salary);
         String key = getKey(name, surname);
         if (employees.containsKey(key)) {
@@ -39,6 +48,10 @@ public class EmployeeService {
     }
 
     public Employee remove(String name, String surname) {
+
+        if (!validateInput(name, surname)) {
+            throw new InvalidInputException();
+        }
         String key = getKey(name, surname);
         if (!employees.containsKey(key)) {
             throw new EmployeeNotFoundException();
@@ -47,6 +60,10 @@ public class EmployeeService {
     }
 
     public Employee find(String name, String surname) {
+
+        if (!validateInput(name, surname)) {
+            throw new InvalidInputException();
+        }
         String key = getKey(name, surname);
         if (!employees.containsKey(key)) {
             throw new EmployeeNotFoundException();
@@ -58,5 +75,9 @@ public class EmployeeService {
 
     public List<Employee> getAll() {
         return new ArrayList<>(employees.values());
+    }
+
+    private boolean validateInput(String firstName, String lastName) {
+        return isAlpha(firstName) && isAlpha(lastName);
     }
 }
